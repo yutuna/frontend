@@ -1,13 +1,13 @@
 #plan
 ##month
 ###1月15-31
--javascript权威指南
+  -javascript权威指南
 ###2月1-28
--css权威指南
--JavaScript语言精粹
+  -css权威指南
+  -JavaScript语言精粹
 ###3月
--深入浅出node.js
--CSS开发王
+  -深入浅出node.js
+  -CSS开发王
 ##day
 -  1/14 javascript权威指南1-3章
 -  1/15 javascript权威指南4-6章
