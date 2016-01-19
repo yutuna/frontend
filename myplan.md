@@ -14,6 +14,6 @@
 -  1/15 javascript权威指南3-4章；看3篇javascript博客，看3篇css博客
 -  1/16 javascript权威指南5-6章；看3篇javascript博客，看3篇css博客
 -  1/17 javascript权威指南7-8章；看3篇javascript博客，看3篇css博客
--  1/18 javascript权威指南9-10章；看3篇javascript博客，看3篇css博客
--  1/19 javascript权威指南11-12章；看3篇javascript博客，看3篇css博客
--  1/20 javascript权威指南13-14章；看3篇javascript博客，看3篇css博客
+-  1/18 javascript权威指南8章；看3篇javascript博客，看3篇css博客
+-  1/19 javascript权威指南9章；看3篇javascript博客，看3篇css博客
+-  1/20 javascript权威指南10章；看3篇javascript博客，看3篇css博客
