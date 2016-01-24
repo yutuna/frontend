@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>sodo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <meta name="Keywords" content="" />
+  <meta name="description" content="" />
+  <link href="reset.css" rel="stylesheet"></link> 
+  <script src="jquery-1.8.3.min.js"></script>
+  <style type="text/css">
+    body{
+        box-sizing: border-box;
+    }
+    .box{
+        border-top: 2px solid #000;
+        border-left: 2px solid #000;
+        width: 470px;
+        height: 470px;
+        margin: 10px;
+    }
+  	.line{
+        border-bottom: 2px solid #aaa;
+        width: 100%;
+    }
+    .line:nth-child(3n){
+        border-bottom: 2px solid #000;
+    }
+    .item{
+        border-right: 2px solid #aaa;
+        height: 40px;
+        width: 40px;
+        padding: 5px;
+        overflow: hidden;
+        float: left;
+        position: relative;
+    }
+    .item:nth-child(3n){
+        border-right: 2px solid #000;
+    }
+    .item i{
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        background: #c00;
+    }
+    .J_num{
+        border: none;
+        line-height: 40px;
+        font-size: 14px;
+        width: 40px;
+        text-align: center;
+    }
+    .J_num.init_num{
+        border-bottom: none;
+        font-weight: bold;
+    }
+    .J_num.sure_num{
+        font-weight: bold;
+        color: #a33;
+    }
+    .btns{
+        margin-top: 10px;
+    }
+    .btns .btn{
+        display: block;
+        color: #fff;
+        background: #3c3;
+        border-radius: 5px;
+        text-align: center;
+        width: 100px;
+        margin-right: 10px;
+        line-height: 30px;
+        float: left;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .btns .btn:active,.btns .btn:hover{
+        text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+	<div class="container">
+        <div class="box">
+            
+        </div>
+        <div class="btns clearfix">
+            <a class="btn J_reset_num">重置初始数字</a>
+            <a class="btn J_start_cal">开始计算</a>
+            <a class="btn J_next_step">下一步</a>
+            <a class="btn J_next_checkonly">下一步2</a>
+            <a class="btn J_next_rollback">回滚</a>
+            <a class="btn J_next_lock">锁定</a>
+        </div>
+	</div>
+	<script type="text/javascript">
+    var UNSURE = 2;
+    var SURE = 1;
+    $(function(){
+        $(".J_reset_num").click(function(){
+            box.setNums();
+        });
+        $(".J_start_cal").click(function(){
+            box.starts();
+        });
+        $(".J_next_step").click(function(){
+            box.nexts();
+        });
+        $(".J_next_checkonly").click(function(){
+            box.checkonly();
+        });
+        $(".J_next_rollback").click(function(){
+            box.rollback();
+        });
+        $(".J_next_lock").click(function(){
+            box.lock();
+        });
+
+
+        var Fan = function(row, col, num){
+            this.row = row;
+            this.col = col;
+            this.num = num;
+            this.inblock = {
+                row : Math.floor(row/3)*3,
+                col : Math.floor(col/3)*3,
+            };
+            this.status = UNSURE;
+            this.prope = [0,1,1,1,1,1,1,1,1,1];
+            this.propelength = 9;
+        };
+        Fan.prototype = {
+
+            //确定哪个是最后可能值
+            getLs : function(){
+                if(this.propelength == 1){
+                    for(var i=1;i<=9;i++){
+                        if(this.prope[i] === 1){
+                            return i;
+                        }
+                    }
+                }else if(this.propelength == 0){
+                    alert('出错了');
+                    return false;
+                }else{
+                    return false;
+                }   
+            },
+
+            //成为初始数字
+            tobeinum : function(n){
+                this.status = SURE;
+                $(".line").eq(this.row).find(".item").eq(this.col).find(".J_num").addClass("init_num");
+                this.num = n;
+                for(var i=1;i<=9;i++){
+                    this.prope[i] = 0;
+                }
+                this.prope[n] = 1;
+            },
+
+            tobesurenum :function(n){
+                this.status = SURE;
+                $(".line").eq(this.row).find(".item").eq(this.col).find(".J_num").addClass("sure_num");
+                this.num = n;
+                for(var i=1;i<=9;i++){
+                    this.prope[i] = 0;
+                }
+                this.prope[n] = 1;
+            },
+
+            //遍历
+            paic : function(){
+                var n = this.num;
+                var r = this.row;
+                var c = this.col;
+                var br = this.inblock.row;
+                var bc = this.inblock.col;
+
+                //block
+                for(var i=0;i<3;i++){
+                    for(var j=0;j<3;j++){
+                        var bij = box.fans[i+br][j+bc];
+                        if(bij.status == UNSURE && bij.prope[n] == 1){
+                            if(n == 9){
+                                // alert('r:'+r+',c:'+c+',bij:'+(i+br)+''+(j+bc));
+                            }
+                            bij.prope[n] = 0;
+                            bij.propelength--;
+                            console.log(bij);
+                        }
+                    }
+                }
+
+                //row
+                for(var j=0;j<9;j++){
+                    var bij = box.fans[r][j];
+                    if(bij.status == UNSURE && bij.prope[n] == 1){
+                        if(n == 9){
+                            // alert('r:'+r+',c:'+c+',bij:'+r+''+j);
+                        }
+                        bij.prope[n] = 0;
+                        bij.propelength--;
+                    }
+                }
+
+                //col
+                for(var j=0;j<9;j++){
+                    var bij = box.fans[j][c];
+                    if(bij.status == UNSURE && bij.prope[n] == 1){
+                        if(n == 9){
+                            // alert('r:'+r+',c:'+c+',bij:'+j+''+c);
+                        }
+                        bij.prope[n] = 0;
+                        bij.propelength--;
+                    }
+                }
+            },
+
+            shownums: function(){
+                console.log(this.prope);
+            },
+        };
+
+        var box = {
+            fans : [],
+            init : function(){
+                var ihtml = '<div class="item" data-r="" data-c=""><input type="text" class="J_num"></div>';
+                var html = '';
+                for(var j=0;j<9;j++){
+                    var line_html = '<div class="line clearfix">';
+                    var al = [];
+                    for(var i=0;i<9;i++){
+                        line_html += '<div class="item" data-r="' + j + '" data-c="' + i + '"><i></i><input type="text" class="J_num"></div>';
+                        var fobj = new Fan(j, i, 99);
+                        al[i] = fobj;
+                    }
+                    box.fans[j] = al;
+                    // console.log(box.fans);
+                    line_html += '</div>';
+                    html += line_html;
+                }
+                $('.box').html(html);  
+
+                $(".item i").click(function(){
+                    var r = $(this).parent().data('r');
+                    var c = $(this).parent().data('c');
+                    console.log(r+''+c);
+                    console.log(box.fans[r][c].prope);
+                });  
+            },
+            setNums : function(){
+                for(var i=0;i<9;i++){
+                    for(var j=0;j<9;j++){
+                        var val = $(".line").eq(i).find(".item").eq(j).find(".J_num").val();
+                        var bij = this.fans[i][j];
+                        if(val){
+                            bij.tobeinum(val);
+                        }else{
+                            bij.status = UNSURE;
+                            bij.prope = [0,1,1,1,1,1,1,1,1,1];
+                            bij.propelength = 9;
+                            bij.num = 999;
+                        }
+                    }
+                }
+            },
+            starts : function(){
+                for(var i=0;i<9;i++){
+                    for(var j=0;j<9;j++){
+                        box.fans[i][j].paic();
+                    }
+                }
+            },
+            nexts : function(){
+                var sum = 0;
+                for(var i=0;i<9;i++){
+                    for(var j=0;j<9;j++){
+                        var bij = this.fans[i][j];
+                        if(bij.propelength == 1 && bij.status == UNSURE){
+                            for(var k=1;k<=9;k++){
+                                if(bij.prope[k] == 1){
+                                    $(".line").eq(i).find(".item").eq(j).find(".J_num").val(k);
+                                    bij.tobesurenum(k);
+                                    bij.paic();
+                                    sum ++;
+                                }
+                            }
+                        }
+                    }
+                }
+                console.log('ok!all:'+sum);
+            },
+            checkonly: function(){
+                //9block
+                for(var i=0;i<3;i++){
+                    for(var j=0;j<3;j++){
+                        var posib = [0,0,0,0,0,0,0,0,0,0];
+                        var posib_n = [0,0,0,0,0,0,0,0,0,0];
+                        for(var ii=0;ii<3;ii++){
+                            for(var jj=0;jj<3;jj++){
+                                var biijj = box.fans[i*3+ii][j*3+jj];
+                                for(var k=1;k<=9;k++){
+                                    console.log(k);
+                                    if(biijj.prope[k] == 1){
+                                        posib[k] ++;
+                                        posib_n[k] = [ii,jj];
+                                    }
+                                }
+                            }
+                        }
+                        for(var k=1;k<=9;k++){
+                            console.log(k);
+                            if(posib[k] == 1){
+                                var r = i*3+posib_n[k][0];
+                                var c = j*3+posib_n[k][1];
+                                var bij = box.fans[r][c];
+                                if(bij.status == UNSURE){
+                                    $(".line").eq(r).find(".item").eq(c).find(".J_num").val(k);
+                                    bij.tobesurenum(k);
+                                    bij.paic();
+                                    console.log('有个唯一：'+i+','+j+','+k);
+                                }
+                                    
+                            }else if(posib[k] == 0){
+                                console.log('块'+i+','+j+'的数字'+k+'无解');
+                                // alert('无解');
+                            }
+                        }
+                    }
+                }
+
+                //9row
+                for(var j=0;j<9;j++){
+                    var posib = [0,0,0,0,0,0,0,0,0,0];
+                    var posib_n = [0,0,0,0,0,0,0,0,0,0];
+                    for(var jj=0;jj<9;jj++){
+                        var biijj = box.fans[j][jj];
+                        for(var k=1;k<=9;k++){
+                            if(biijj.prope[k] == 1){
+                                posib[k] ++;
+                                posib_n[k] = jj;
+                            }
+                        }
+                    }
+                    for(var k=1;k<=9;k++){
+                        if(posib[k] == 1){
+                            var r = j;
+                            var c = posib_n[k];
+                            var bij = box.fans[r][c];
+                            if(bij.status == UNSURE){
+                                $(".line").eq(r).find(".item").eq(c).find(".J_num").val(k);
+                                bij.tobesurenum(k);
+                                bij.paic();
+                                console.log('有个唯一：'+j+':'+k);
+                            }
+                                
+                        }else if(posib[k] == 0){
+                            // alert('无解');
+                            console.log(j+'行的数字'+k+'无解');
+                        }
+                    }
+                }
+
+                //9col
+                for(var j=0;j<9;j++){
+                    var posib = [0,0,0,0,0,0,0,0,0,0];
+                    var posib_n = [0,0,0,0,0,0,0,0,0,0];
+                    for(var jj=0;jj<9;jj++){
+                        var biijj = box.fans[jj][j];
+                        for(var k=1;k<=9;k++){
+                            if(biijj.prope[k] == 1){
+                                posib[k] ++;
+                                posib_n[k] = jj;
+                            }
+                        }
+                    }
+                    for(var k=1;k<=9;k++){
+                        if(posib[k] == 1){
+                            var r = posib_n[k];
+                            var c = j;
+                            var bij = box.fans[r][c];
+                            if(bij.status == UNSURE){
+                                $(".line").eq(r).find(".item").eq(c).find(".J_num").val(k);
+                                bij.tobesurenum(k);
+                                bij.paic();
+                                console.log('有个唯一：'+j+':'+k);
+                            }
+                                
+                        }else if(posib[k] == 0){
+                            // alert('无解');
+                            console.log(j+'列的数字'+k+'无解');
+                        }
+                    }
+                }
+            },
+            lock:function(){
+                for(var i=0;i<9;i++){
+                    for(var j=0;j<9;j++){
+                        var bij = box.fans[i][j];
+                        var d = $(".line").eq(i).find(".item").eq(j);
+                        if(bij.status == SURE){
+                            d.addClass('J_lock');
+                        }
+                    }
+                }
+            },
+            rollback:function(){
+                for(var i=0;i<9;i++){
+                    for(var j=0;j<9;j++){
+                        var d = $(".line").eq(i).find(".item").eq(j);
+                        if(!d.hasClass('J_lock')){
+                            d.find('.J_num').val('');
+                        }
+                    }
+                }
+                $('.J_reset_num').click();
+            },
+        };
+        box.init();
+    });
+
+	</script>
+</body>
+</html>
