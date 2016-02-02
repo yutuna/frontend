@@ -25,3 +25,20 @@
 -  1/25 javascript权威指南12章；看3篇javascript博客，看3篇css博客
 -  1/26 javascript权威指南12章；看3篇javascript博客，看3篇css博客
 -  1/27 javascript权威指南13章；看3篇javascript博客，看3篇css博客
+-  1/28 javascript权威指南14章；看3篇javascript博客，看3篇css博客
+-  1/29 javascript权威指南14章；看3篇javascript博客，看3篇css博客
+-  1/30 javascript权威指南15章；看3篇javascript博客，看3篇css博客
+-  1/31 javascript权威指南16章；看3篇javascript博客，看3篇css博客
+-  2/1 javascript权威指南17章；看3篇javascript博客，看3篇css博客
+-  2/2 javascript权威指南18章；看3篇javascript博客，看3篇css博客
+
+---
+
+- 2/3 css权威指南 第1-2章；博客3篇
+- 2/4 css权威指南 第3-4章；博客3篇
+- 2/5~2/9 去外面玩
+- 2/10 css权威指南 第5-6章；博客3篇
+- 2/11 css权威指南 第7-8章；博客3篇
+- 2/12 css权威指南 第9-10章；博客3篇
+- 2/13 css权威指南 第11-12章；博客3篇
+- 2/14 css权威指南 第13-14章；博客3篇
